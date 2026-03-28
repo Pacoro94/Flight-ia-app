@@ -23,7 +23,7 @@ Decime si es eficiente y por qué.`
     console.log("OPENAI RESPONSE:", data);
 
     res.status(200).json({
-      result: JSON.stringify(data)
+      result: data.output?.[0]?.content?.[0]?.text || "Error en respuesta IA"    
     });
   
   } catch (error) {
