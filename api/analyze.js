@@ -2,6 +2,13 @@ export default async function handler(req, res) {
   try {
     const { origin, destination, fuel, aircraft } = req.body;
 
+    // lógica simple por avión
+    let efficiencyFactor = 1;
+
+    if (aircraft?.toLowerCase().includes("737")) efficiencyFactor = 1;
+    else if (aircraft?.toLowerCase().includes("a320")) efficiencyFactor = 0.95;
+    else if (aircraft?.toLowerCase().includes("787")) efficiencyFactor = 0.8;
+
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -10,18 +17,17 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        input: `Respondé SOLO con 3 líneas, sin explicaciones extra.
+        input: `Respondé SOLO con 3 líneas.
 
-      Formato obligatorio:
+Avión: ${aircraft}
+Ruta: ${origin}-${destination}
+Fuel: ${fuel}
+Factor eficiencia: ${efficiencyFactor}
 
-      Estado: (Eficiente o No eficiente)
-      Motivo: (máximo 10 palabras)
-      Mejora: (máximo 8 palabras)
-
-     Datos:
-     Avión: ${aircraft}
-     Ruta: ${origin}-${destination}
-     Fuel: ${fuel}`
+Formato:
+Estado:
+Motivo:
+Mejora:`
       })
     });
 
@@ -29,13 +35,13 @@ export default async function handler(req, res) {
 
     const result = data.output?.[0]?.content?.[0]?.text;
 
-    if (!result) {
-      return res.status(200).json({ result: "⚠️ No se pudo analizar" });
-    }
-
-    res.status(200).json({ result });
+    res.status(200).json({
+      result: result || "Error en respuesta IA"
+    });
 
   } catch (error) {
-    res.status(200).json({ result: "❌ Error en servidor" });
+    res.status(200).json({
+      result: "❌ Error en servidor"
+    });
   }
 }
