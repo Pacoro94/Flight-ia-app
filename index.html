@@ -5,6 +5,42 @@
 </head>
 <body>
   <h1>✈️ Flight AI</h1>
-  <p>Subí tu vuelo y obtené insights inteligentes.</p>
+
+  <h2>Ingresá tu vuelo</h2>
+
+  <form id="flightForm">
+    <label>Origen:</label><br>
+    <input type="text" id="origin"><br><br>
+
+    <label>Destino:</label><br>
+    <input type="text" id="destination"><br><br>
+
+    <label>Combustible usado (kg):</label><br>
+    <input type="number" id="fuel"><br><br>
+
+    <button type="submit">Analizar vuelo</button>
+  </form>
+
+  <h2>Resultado:</h2>
+  <p id="result">---</p>
+
+  <script>
+    document.getElementById("flightForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      let fuel = document.getElementById("fuel").value;
+
+      let resultText = "";
+
+      if (fuel > 5000) {
+        resultText = "⚠️ Consumo alto. Revisar perfil de ascenso.";
+      } else {
+        resultText = "✅ Consumo eficiente.";
+      }
+
+      document.getElementById("result").innerText = resultText;
+    });
+  </script>
+
 </body>
 </html>
