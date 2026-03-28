@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
-    const { origin, destination, fuel } = req.body;
-
+    const { origin, destination, fuel, aircraft } = req.body;
+    
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -13,11 +13,12 @@ export default async function handler(req, res) {
 
         input: `Analiza este vuelo de forma MUY breve.
 
+        Avión: ${aircraft}        
         Origen: ${origin}
         Destino: ${destination}
         Combustible: ${fuel} kg
 
-        Respondé EXACTAMENTE en este formato:
+        Respondé EXACTAMENTE:
 
         Estado: (Eficiente o No eficiente)
         Motivo: (máximo 1 línea)
