@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const { origin, destination, fuel, aircraft } = req.body;
-    
+
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -10,42 +10,30 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
+        input: `Evaluá eficiencia:
 
-        input: `Sos un piloto experto en eficiencia de combustible.
+Avión: ${aircraft}
+Ruta: ${origin}-${destination}
+Fuel: ${fuel}
 
-        Analizá este vuelo teniendo MUY en cuenta el tipo de avión.
-
-        Avión: ${aircraft || "NO ESPECIFICADO"}
-        Origen: ${origin}
-        Destino: ${destination}
-        Combustible: ${fuel} kg
-
-        Respondé SOLO así:
-
-       Estado: (Eficiente o No eficiente)
-       Motivo: (1 línea clara basada en el avión)
-       Mejora: (1 acción concreta específica para ese avión)`
-        
-        Respondé EXACTAMENTE:
-
-        Estado: (Eficiente o No eficiente)
-        Motivo: (máximo 1 línea)
-        Mejora: (1 sugerencia corta)`
-      
+Respuesta:
+Estado:
+Motivo:
+Mejora:`
       })
     });
 
     const data = await response.json();
 
-    console.log("OPENAI RESPONSE:", data);
+    const result = data.output?.[0]?.content?.[0]?.text;
 
-    res.status(200).json({
-      result: data.output?.[0]?.content?.[0]?.text || "Error en respuesta IA"    
-    });
-  
+    if (!result) {
+      return res.status(200).json({ result: "⚠️ No se pudo analizar" });
+    }
+
+    res.status(200).json({ result });
+
   } catch (error) {
-    res.status(500).json({
-      result: "Error en el servidor"
-    });
+    res.status(200).json({ result: "❌ Error en servidor" });
   }
 }
