@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>Flight AI</title>
 
@@ -28,81 +27,91 @@
       width: 100%;
       padding: 10px;
       margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
     button {
       background: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
+      font-weight: bold;
     }
 
     #result {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
       margin-top: 20px;
     }
   </style>
-
 </head>
-  
+
 <body>
+
   <h1>✈️ Flight AI</h1>
 
   <h2>Ingresá tu vuelo</h2>
 
   <form id="flightForm">
-    <label>Origen:</label><br>
-    <input type="text" id="origin"><br><br>
+    <label>Origen:</label>
+    <input type="text" id="origin">
 
-    <label>Destino:</label><br>
-    <input type="text" id="destination"><br><br>
+    <label>Destino:</label>
+    <input type="text" id="destination">
 
-    <label>Tipo de avión:</label><br>
-    <input type="text" id="aircraft" placeholder="Ej: B737-800"><br><br>    
+    <label>Tipo de avión:</label>
+    <input type="text" id="aircraft" placeholder="Ej: B737-800">
 
-    <label>Combustible usado (kg):</label><br>
-    <input type="number" id="fuel"><br><br>
+    <label>Combustible (kg):</label>
+    <input type="number" id="fuel">
 
     <button type="submit">Analizar vuelo</button>
   </form>
 
-  <h2>Resultado:</h2>
-  <p id="result">---</p>
+  <div id="result"></div>
 
-  <h2>Historial de vuelos</h2>
-  <ul id="history"></ul>
-  
-  <script>
-  document.getElementById("flightForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+<script>
+document.getElementById("flightForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-    let origin = document.getElementById("origin").value;
-    let destination = document.getElementById("destination").value;
-    let fuel = document.getElementById("fuel").value;
-    let aircraft = document.getElementById("aircraft").value;
+  let origin = document.getElementById("origin").value;
+  let destination = document.getElementById("destination").value;
+  let fuel = document.getElementById("fuel").value;
+  let aircraft = document.getElementById("aircraft").value;
 
-    document.getElementById("result").innerText = "⏳ Analizando...";
+  const resultBox = document.getElementById("result");
+  resultBox.innerHTML = "⏳ Analizando...";
 
-    try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ origin, destination, fuel, aircraft })
-      });
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ origin, destination, fuel, aircraft })
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      document.getElementById("result").innerText = data.result;
+    const lines = data.result.split("\n");
 
-    } catch (error) {
-      document.getElementById("result").innerText = "❌ Error al analizar";
-    }
-  });
+    let estado = lines[0]?.replace("Estado:", "").trim();
+    let motivo = lines[1]?.replace("Motivo:", "").trim();
+    let mejora = lines[2]?.replace("Mejora:", "").trim();
+
+    let color = estado === "Eficiente" ? "#28a745" : "#dc3545";
+
+    resultBox.innerHTML = `
+      <div style="background:white;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+        <h2 style="color:${color};margin:0;">${estado}</h2>
+        <p><strong>Motivo:</strong> ${motivo}</p>
+        <p><strong>Mejora:</strong> ${mejora}</p>
+      </div>
+    `;
+
+  } catch (error) {
+    resultBox.innerHTML = "❌ Error al analizar";
+  }
+});
 </script>
-  
+
 </body>
 </html>
