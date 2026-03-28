@@ -5,68 +5,95 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
       max-width: 600px;
       margin: auto;
-      padding: 20px;
-      background: #f5f7fa;
     }
 
     h1 {
       text-align: center;
+      margin-bottom: 10px;
     }
 
-    form {
-      background: white;
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #1e293b;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      margin-bottom: 20px;
     }
 
-    input, button {
+    input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+      background: #0f172a;
+      color: white;
     }
 
     button {
-      background: #007bff;
-      color: white;
+      width: 100%;
+      padding: 12px;
       border: none;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .result {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .status {
+      font-size: 28px;
       font-weight: bold;
     }
 
-    #result {
-      margin-top: 20px;
-    }
+    .green { color: #22c55e; }
+    .red { color: #ef4444; }
   </style>
 </head>
 
 <body>
 
+<div class="container">
+
   <h1>✈️ Flight AI</h1>
+  <div class="subtitle">Optimización inteligente de vuelos</div>
 
-  <h2>Ingresá tu vuelo</h2>
+  <div class="card">
+    <form id="flightForm">
+      <input type="text" id="origin" placeholder="Origen (ej: BUE)">
+      <input type="text" id="destination" placeholder="Destino (ej: MIA)">
+      <input type="text" id="aircraft" placeholder="Avión (ej: B737-800)">
+      <input type="number" id="fuel" placeholder="Combustible (kg)">
 
-  <form id="flightForm">
-    <label>Origen:</label>
-    <input type="text" id="origin">
-
-    <label>Destino:</label>
-    <input type="text" id="destination">
-
-    <label>Tipo de avión:</label>
-    <input type="text" id="aircraft" placeholder="Ej: B737-800">
-
-    <label>Combustible (kg):</label>
-    <input type="number" id="fuel">
-
-    <button type="submit">Analizar vuelo</button>
-  </form>
+      <button type="submit">Analizar vuelo</button>
+    </form>
+  </div>
 
   <div id="result"></div>
+
+</div>
 
 <script>
 document.getElementById("flightForm").addEventListener("submit", async function(e) {
@@ -97,18 +124,18 @@ document.getElementById("flightForm").addEventListener("submit", async function(
     let motivo = lines[1]?.replace("Motivo:", "").trim();
     let mejora = lines[2]?.replace("Mejora:", "").trim();
 
-    let color = estado === "Eficiente" ? "#28a745" : "#dc3545";
+    let colorClass = estado === "Eficiente" ? "green" : "red";
 
     resultBox.innerHTML = `
-      <div style="background:white;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-        <h2 style="color:${color};margin:0;">${estado}</h2>
+      <div class="result">
+        <div class="status ${colorClass}">${estado}</div>
         <p><strong>Motivo:</strong> ${motivo}</p>
         <p><strong>Mejora:</strong> ${mejora}</p>
       </div>
     `;
 
   } catch (error) {
-    resultBox.innerHTML = "❌ Error al analizar";
+    resultBox.innerHTML = "❌ Error";
   }
 });
 </script>
