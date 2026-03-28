@@ -59,6 +59,9 @@
     <label>Destino:</label><br>
     <input type="text" id="destination"><br><br>
 
+    <label>Tipo de avión:</label><br>
+    <input type="text" id="aircraft" placeholder="Ej: B737-800"><br><br>    
+
     <label>Combustible usado (kg):</label><br>
     <input type="number" id="fuel"><br><br>
 
@@ -80,7 +83,8 @@
     let origin = document.getElementById("origin").value;
     let destination = document.getElementById("destination").value;
     let fuel = document.getElementById("fuel").value;
-
+    let aircraft = document.getElementById("aircraft").value;
+    
     document.getElementById("result").innerText = "Analizando con IA...";
 
     const response = await fetch("/api/analyze", {
@@ -88,7 +92,7 @@
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ origin, destination, fuel })
+      body: JSON.stringify({ origin, destination, fuel, aircraft })    
     });
 
     const data = await response.json();
