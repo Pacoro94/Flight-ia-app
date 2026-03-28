@@ -11,13 +11,21 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "gpt-4o-mini",
 
-        input: `Analiza este vuelo de forma MUY breve.
+        input: `Sos un piloto experto en eficiencia de combustible.
 
-        Avión: ${aircraft}        
+        Analizá este vuelo teniendo MUY en cuenta el tipo de avión.
+
+        Avión: ${aircraft || "NO ESPECIFICADO"}
         Origen: ${origin}
         Destino: ${destination}
         Combustible: ${fuel} kg
 
+        Respondé SOLO así:
+
+       Estado: (Eficiente o No eficiente)
+       Motivo: (1 línea clara basada en el avión)
+       Mejora: (1 acción concreta específica para ese avión)`
+        
         Respondé EXACTAMENTE:
 
         Estado: (Eficiente o No eficiente)
