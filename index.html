@@ -25,22 +25,32 @@
   <p id="result">---</p>
 
   <script>
-    document.getElementById("flightForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+  document.getElementById("flightForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-      let fuel = document.getElementById("fuel").value;
+    let origin = document.getElementById("origin").value;
+    let destination = document.getElementById("destination").value;
+    let fuel = document.getElementById("fuel").value;
 
-      let resultText = "";
+    document.getElementById("result").innerText = "Analizando con IA...";
 
-      if (fuel > 5000) {
-        resultText = "⚠️ Consumo alto. Revisar perfil de ascenso.";
-      } else {
-        resultText = "✅ Consumo eficiente.";
-      }
-
-      document.getElementById("result").innerText = resultText;
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        origin,
+        destination,
+        fuel
+      })
     });
-  </script>
 
+    const data = await response.json();
+
+    document.getElementById("result").innerText = data.result;
+  });
+</script>
+  
 </body>
 </html>
