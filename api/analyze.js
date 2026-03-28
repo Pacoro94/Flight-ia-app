@@ -20,10 +20,12 @@ Decime si es eficiente y por qué.`
 
     const data = await response.json();
 
-    res.status(200).json({
-      result: data.output?.[0]?.content?.[0]?.text || "Error en respuesta IA"
-    });
+    console.log("OPENAI RESPONSE:", data);
 
+    res.status(200).json({
+      result: JSON.stringify(data)
+    });
+  
   } catch (error) {
     res.status(500).json({
       result: "Error en el servidor"
