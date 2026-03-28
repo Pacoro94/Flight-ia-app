@@ -75,8 +75,6 @@
   <ul id="history"></ul>
   
   <script>
-  let history = [];
-
   document.getElementById("flightForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
@@ -84,32 +82,25 @@
     let destination = document.getElementById("destination").value;
     let fuel = document.getElementById("fuel").value;
     let aircraft = document.getElementById("aircraft").value;
-    
-    document.getElementById("result").innerText = "Analizando con IA...";
 
-    const response = await fetch("/api/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ origin, destination, fuel, aircraft })    
-    });
+    document.getElementById("result").innerText = "⏳ Analizando...";
 
-    const data = await response.json();
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ origin, destination, fuel, aircraft })
+      });
 
-    document.getElementById("result").innerText = data.result;
+      const data = await response.json();
 
-    // guardar en historial (local)
-    history.push(`${origin} → ${destination} (${fuel} kg)`);
+      document.getElementById("result").innerText = data.result;
 
-    const list = document.getElementById("history");
-    list.innerHTML = "";
-
-    history.forEach(item => {
-      let li = document.createElement("li");
-      li.innerText = item;
-      list.appendChild(li);
-    });
+    } catch (error) {
+      document.getElementById("result").innerText = "❌ Error al analizar";
+    }
   });
 </script>
   
