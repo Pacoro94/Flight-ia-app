@@ -10,16 +10,18 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        input: `Evaluá eficiencia:
+        input: `Respondé SOLO con 3 líneas, sin explicaciones extra.
 
-Avión: ${aircraft}
-Ruta: ${origin}-${destination}
-Fuel: ${fuel}
+      Formato obligatorio:
 
-Respuesta:
-Estado:
-Motivo:
-Mejora:`
+      Estado: (Eficiente o No eficiente)
+      Motivo: (máximo 10 palabras)
+      Mejora: (máximo 8 palabras)
+
+     Datos:
+     Avión: ${aircraft}
+     Ruta: ${origin}-${destination}
+     Fuel: ${fuel}`
       })
     });
 
