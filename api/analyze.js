@@ -1,22 +1,27 @@
 export default async function handler(req, res) {
-  try {
-    let body;
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-    try {
-    body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-    } catch (e) {
-    return res.status(400).json({ error: "Invalid JSON" });
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  if (req.method !== "POST") {
+    return res.status(200).json({ message: "API funcionando" });
+  }
+
+  try {
+    let body = req.body;
+
+    if (typeof body === "string") {
+      body = JSON.parse(body);
     }
 
     const { origin, destination, aircraft, fuel } = body;
-    // lógica simple por avión
-    let efficiencyFactor = 1;
 
-    if (aircraft?.toLowerCase().includes("737")) efficiencyFactor = 1;
-    else if (aircraft?.toLowerCase().includes("a320")) efficiencyFactor = 0.95;
-    else if (aircraft?.toLowerCase().includes("787")) efficiencyFactor = 0.8;
-
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -24,31 +29,26 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        input: `Respondé SOLO con 3 líneas.
-
-Avión: ${aircraft}
-Ruta: ${origin}-${destination}
-Fuel: ${fuel}
-Factor eficiencia: ${efficiencyFactor}
-
-Formato:
-Estado:
-Motivo:
-Mejora:`
+        messages: [
+          {
+            role: "system",
+            content: "Respondé SIEMPRE corto en formato: Estado, Motivo, Mejora."
+          },
+          {
+            role: "user",
+            content: `Origen: ${origin}, Destino: ${destination}, Avión: ${aircraft}, Combustible: ${fuel}kg`
+          }
+        ]
       })
     });
 
     const data = await response.json();
 
-    const result = data.output?.[0]?.content?.[0]?.text;
+    const text = data?.choices?.[0]?.message?.content || "Sin respuesta";
 
-    res.status(200).json({
-      result: result || "Error en respuesta IA"
-    });
+    return res.status(200).json({ result: text });
 
   } catch (error) {
-    res.status(200).json({
-      result: "❌ Error en servidor"
-    });
+    return res.status(500).json({ error: "Error interno" });
   }
 }
