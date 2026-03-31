@@ -1,7 +1,14 @@
 export default async function handler(req, res) {
   try {
-    const { origin, destination, fuel, aircraft } = req.body;
+    let body;
 
+    try {
+    body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    } catch (e) {
+    return res.status(400).json({ error: "Invalid JSON" });
+    }
+
+    const { origin, destination, aircraft, fuel } = body;
     // lógica simple por avión
     let efficiencyFactor = 1;
 
